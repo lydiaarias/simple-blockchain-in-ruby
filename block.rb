@@ -1,18 +1,19 @@
 class Block
   attr_reader :index, :timestamp, :transactions, 
 							:transactions_count, :previous_hash, 
-							:nonce, :hash 
+							:nonce, :hash, :creator
 
-  def initialize(index, transactions, previous_hash)
-    @index         		 	 = index
-    @timestamp      	 	 = Time.now
-    @transactions 	 		 = transactions
-		@transactions_count  = transactions.size
-    @previous_hash 		 	 = previous_hash
-    @nonce, @hash  		 	 = compute_hash_with_proof_of_work
+  def initialize(index, timestamp, data, previous_hash, creator)
+    @index = index
+    @timestamp = timestamp
+    @data = data
+    @previous_hash = previous_hash
+    @creator = creator
+    @nonce = 0
+    @hash = compute_hash_with_proof_of_work
   end
-
-	def compute_hash_with_proof_of_work(difficulty="00")
+              
+	def compute_hash_with_proof_of_work(difficulty="00000")
 		nonce = 0
 		loop do 
 			hash = calc_hash_with_nonce(nonce)
@@ -31,13 +32,13 @@ class Block
 								@timestamp.to_s + 
 								@transactions.to_s + 
 								@transactions_count.to_s +	
-								@previous_hash )
+								@previous_hash)
     sha.hexdigest 
   end
 
   def self.first( *transactions )    # Create genesis block
     ## Uses index zero (0) and arbitrary previous_hash ("0")
-    Block.new( 0, transactions, "0" )
+    Block.new( 0, transactions, "Genesis Block", "0", "Lydia")
   end
 
   def self.next( previous, transactions )
